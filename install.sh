@@ -1107,7 +1107,7 @@ eindscherm() {
   case $RN_MODUS in
     alles)
       grijs "1. Log in en kijk bij Admin > Nodes: de node hoort een groen hartje te hebben."
-      [[ $RN_FIVEM == j ]] && grijs "2. Maak een server met de egg FiveM (nest FiveM) en vul je sleutel van keymaster.fivem.net in."
+      [[ $RN_FIVEM == j ]] && grijs "2. Maak een server met de egg FiveM (nest FiveM) en vul je sleutel van portal.cfx.re in."
       grijs "3. Stel e-mail in bij Admin > Settings > Mail, anders komen wachtwoordmails niet aan."
       ;;
     panel)

@@ -75,7 +75,7 @@ Met een domein vraagt de installer een certificaat aan bij Let's Encrypt. Daarme
 - **FiveM op arm64** kan niet: FiveM bestaat alleen voor x86_64. Kies je op een arm64-server voor alles, dan slaat hij de egg over.
 - **Zonder firewall** is MariaDB van buitenaf bereikbaar, want gameservers in Docker hebben hem nodig. Laat de firewall aan, of zet poort 3306 zelf dicht voor alles behalve `172.18.0.0/16`.
 - **E-mail** stelt hij niet in. Doe dat in het panel bij Admin, Settings, Mail.
-- **Getest** op Debian 13 (panel v1.15.2, Wings v1.13.5), interactief en zonder vragen. De FiveM-egg is geïmporteerd en gecontroleerd; een draaiende FiveM-server vraagt je eigen sleutel van [keymaster.fivem.net](https://keymaster.fivem.net).
+- **Getest** op Debian 13 (panel v1.15.2, Wings v1.13.5), interactief en zonder vragen. De FiveM-egg is geïmporteerd en gecontroleerd; een draaiende FiveM-server vraagt je eigen sleutel van [portal.cfx.re](https://portal.cfx.re/).
 
 ## Goed om te weten
 
