@@ -934,6 +934,14 @@ s_node_koppelen() {
       || echo "127.0.0.1 ${RN_DOMEIN} # RiantNode-installer: Wings praat lokaal met het panel" >>/etc/hosts
   else
     sed -i "s|^remote: .*|remote: 'http://127.0.0.1'|" /etc/pterodactyl/config.yml
+    # Wings gebruikt zijn remote ook als de toegestane origin voor de browser (CORS). Met remote op 127.0.0.1
+    # weigert hij het panel op het publieke IP: rood hartje, geen console, geen bestanden (gevonden 26-11 op
+    # Ubuntu 24.04 bij Rik). Daarom het panel-adres er uitdrukkelijk bij.
+    if grep -q '^allowed_origins: \[\]' /etc/pterodactyl/config.yml; then
+      sed -i "s|^allowed_origins: \[\]|allowed_origins:\n- ${PANEEL_URL}|" /etc/pterodactyl/config.yml
+    elif ! grep -qF -- "- ${PANEEL_URL}" /etc/pterodactyl/config.yml; then
+      sed -i "/^allowed_origins:/a - ${PANEEL_URL}" /etc/pterodactyl/config.yml
+    fi
   fi
   grep '^remote:' /etc/pterodactyl/config.yml
   if [[ "$(sql "SELECT COUNT(*) FROM allocations WHERE node_id=${node}")" == "0" ]]; then
@@ -1053,6 +1061,15 @@ eindcontrole() {
     else
       meet fout "Wings" "draait niet"
     fi
+  fi
+  if [[ $RN_MODUS == alles ]] && systemctl is-active --quiet wings; then
+    # Het hartje in het panel komt uit de browser: Wings moet het panel-adres als origin toestaan (26-11).
+    local origin
+    origin=$(curl -sk -o /dev/null -D - -X OPTIONS --max-time 10 "$SCHEME://127.0.0.1:8080/api/system" \
+      -H "Origin: $PANEEL_URL" -H "Access-Control-Request-Method: GET" 2>/dev/null \
+      | tr -d '\r' | awk -F': ' 'tolower($1)=="access-control-allow-origin"{print $2}')
+    if [[ "$origin" == "$PANEEL_URL" ]]; then meet goed "Browser" "panel mag met Wings praten (console, hartje)"
+    else meet fout "Browser" "Wings staat het panel niet toe (${origin:-geen antwoord}); zie allowed_origins in /etc/pterodactyl/config.yml"; fi
   fi
   if [[ $RN_MODUS == alles ]]; then
     if [[ "$(sql "SELECT COUNT(*) FROM database_hosts WHERE host='172.18.0.1'" 2>/dev/null || true)" == "1" ]] \
