@@ -937,7 +937,11 @@ s_node_koppelen() {
     # Wings gebruikt zijn remote ook als de toegestane origin voor de browser (CORS). Met remote op 127.0.0.1
     # weigert hij het panel op het publieke IP: rood hartje, geen console, geen bestanden (gevonden 26-11 op
     # Ubuntu 24.04 bij Rik). Daarom het panel-adres er uitdrukkelijk bij.
-    if grep -q '^allowed_origins: \[\]' /etc/pterodactyl/config.yml; then
+    # De regel staat er vóór de eerste start van Wings meestal nog niet in (Wings vult zijn standaarden pas bij het
+    # starten aan); dan zelf toevoegen. Wings laat een bestaande waarde staan. Getest 26-11 op Ubuntu 24.04.
+    if ! grep -q '^allowed_origins:' /etc/pterodactyl/config.yml; then
+      printf 'allowed_origins:\n- %s\n' "$PANEEL_URL" >>/etc/pterodactyl/config.yml
+    elif grep -q '^allowed_origins: \[\]' /etc/pterodactyl/config.yml; then
       sed -i "s|^allowed_origins: \[\]|allowed_origins:\n- ${PANEEL_URL}|" /etc/pterodactyl/config.yml
     elif ! grep -qF -- "- ${PANEEL_URL}" /etc/pterodactyl/config.yml; then
       sed -i "/^allowed_origins:/a - ${PANEEL_URL}" /etc/pterodactyl/config.yml
